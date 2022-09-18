@@ -1,6 +1,8 @@
 package br.com.isaacleal.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,27 +17,31 @@ import br.com.isaacleal.service.ProdutoService;
 @RequestMapping("produtos")
 @RestController
 public class ProdutoController {
-	
+
 	@Autowired
 	private ProdutoService produtoService;
-	
-
 
 	@GetMapping
-	public Iterable<Produto> buscarTodosOsProdutos() {
-		return produtoService.buscarProdutos();	
+	public ResponseEntity<Iterable<Produto>> buscarTodosOsProdutos() {
+
+		var produtos = produtoService.buscarProdutos();
+
+		return ResponseEntity.ok(produtos);
 	}
-	
+
 	@GetMapping("/{id}")
-	public Produto buscarProdutoPorId(@PathVariable Long id) {
-		return produtoService.buscarProdutoPorId(id);
+	public ResponseEntity<Produto> buscarProdutoPorId(@PathVariable Long id) {
+		var produto = produtoService.buscarProdutoPorId(id);
+		return ResponseEntity.ok(produto);
 	}
-	
+
 	@PostMapping
-	public Produto inserir(@RequestBody ProdutoDTO dto) {
-		var produto = new Produto(null,dto.getDescricao(),dto.getValor());
+	public ResponseEntity<Produto> inserir(@RequestBody ProdutoDTO dto) {
+		var produto = new Produto(null, dto.getDescricao(), dto.getValor());
 		
-		return produtoService.inserir(produto);
+		var entity = produtoService.inserir(produto);
+		
+		return ResponseEntity.ok(entity).status(HttpStatus.CREATED).build();
 	}
-	
+
 }
